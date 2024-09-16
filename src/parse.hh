@@ -52,7 +52,7 @@ inline ParseResult parse(int const argc, char const* const* argv) noexcept {
             } else if (arg.starts_with("-")) {
                 return {.retcode=ParseRetCode::INVALID_ARG_ERROR};
             } else {
-                return {.retcode=ParseRetCode::FILE_NOT_FOUND_ERROR, .msg="path "+arg+" not found"};
+                return {.retcode=ParseRetCode::FILE_NOT_FOUND_ERROR, .msg="path "+arg+" not found or is not file"};
             }
         }
     }

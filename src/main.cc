@@ -1,9 +1,9 @@
-#include "outinfo.hh"
-#include "terminate.hh"
-#include "parse.hh"
 #include <cassert>
 #include <cstdio>
 #include <string_view>
+#include "outinfo.hh"
+#include "terminate.hh"
+#include "parse.hh"
 
 int main(int argc, char **argv) noexcept {
     auto arg_parse_result = fs::argparse::parse(argc, argv);

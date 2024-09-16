@@ -48,11 +48,14 @@ inline void run(
     }
 
     ::std::vector<char> buffer(split_bytes);
-    for (uintmax_t file_index{}; inputfile.read(buffer.data(), split_bytes); ++file_index) {
-        ::std::streamsize const bytes_count = inputfile.gcount();
+    ::std::streamsize bytes_count{};
+    uintmax_t file_index{};
+    do {
+        inputfile.read(buffer.data(), split_bytes);
+        bytes_count = inputfile.gcount();
 
-        auto const output_filepath = output_dirpath / ("file_" + ::std::to_string(file_index) + ".bin");
-        ::std::ofstream outputfile(output_filepath, std::ios::out | std::ios::binary);
+        auto const output_filepath = output_dirpath / ("file_"+::std::to_string(file_index++)+".bin");
+        ::std::ofstream outputfile(output_filepath, ::std::ios::out | ::std::ios::binary);
         if (!outputfile.is_open()) [[unlikely]] {
             ::std::cerr << "InternalError: failed to open output file " << output_filepath << "\n";
             fast_io::fast_terminate();
@@ -60,11 +63,7 @@ inline void run(
 
         outputfile.write(buffer.data(), bytes_count);
         outputfile.close();
-
-        if (bytes_count < split_bytes) {
-            break;
-        }
-    }
+    } while (bytes_count >= split_bytes);
 }
 
 } // namespace fs
