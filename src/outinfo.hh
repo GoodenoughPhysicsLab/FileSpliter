@@ -4,7 +4,7 @@
 
 namespace fsi::outinfo {
 
-constexpr auto version = ::std::string_view{"0.1.0"};
+constexpr auto version = ::std::string_view{"0.1.1"};
 
 constexpr auto usage = ::std::string_view{
 R"(usage: FileSpliter [option] ...
