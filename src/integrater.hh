@@ -59,12 +59,12 @@ inline void integrater(::std::filesystem::path const dirpath) noexcept {
         inputfile.close();
     }
 
-    ::std::ranges::sort(data, [](auto const& lhs, auto const& rhs) {
+    ::std::sort(data.begin(), data.end(), [](auto const& lhs, auto const& rhs) {
         return lhs.index < rhs.index;
     });
 
     auto output_file = ::std::ofstream(dirpath / output_filename, ::std::ios::out | ::std::ios::binary);
-    ::std::ranges::for_each(data, [&output_file](auto const& data) {
+    ::std::for_each(data.begin(), data.end(), [&output_file](auto const& data) {
         output_file.write(data.data.data(), data.data.size());
     });
     output_file.close();
