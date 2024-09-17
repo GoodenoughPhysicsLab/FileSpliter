@@ -63,11 +63,17 @@ inline ParseResult parse(int const argc, char const* const* argv) noexcept {
         }
         else if (arg == "--split-size") {
             if (i + 1 >= argc) {
-                return {.retcode=ParseRetCode::Exception, .msg="Error: --split-size takes no argument"};
+                return {.retcode=ParseRetCode::Exception, .msg="Error: --split-size requires an positive integer"};
             }
-            auto _split_size = atoi(argv[++i]);
-            if (split_size <= 0) {
-                return {.retcode=ParseRetCode::Exception, .msg="Error: --split-size takes invalid value"};
+            auto str_num = argv[++i];
+            for (int j{}; str_num[j] != '\0'; ++j) {
+                if (str_num[j] < '0' || str_num[j] > '9') {
+                    return {.retcode=ParseRetCode::Exception, .msg="Error: --split-size requires an positive integer"};
+                }
+            }
+            auto _split_size = atoi(str_num);
+            if (_split_size <= 0) {
+                return {.retcode=ParseRetCode::Exception, .msg="Error: --split-size requires an positive integer"};
             }
             split_size = static_cast<uintmax_t>(_split_size) * 1024;
         }

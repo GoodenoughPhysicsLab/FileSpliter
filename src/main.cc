@@ -1,11 +1,18 @@
 #include <cassert>
 #include <cstdio>
+#include <csignal>
 #include <string_view>
 #include "outinfo.hh"
 #include "terminate.hh"
 #include "parse.hh"
 
 int main(int argc, char **argv) noexcept {
+    ::std::signal(SIGINT, [](int sig){
+        if (sig == SIGINT) {
+            ::std::exit(0);
+        }
+    });
+
     auto arg_parse_result = fsi::argparse::parse(argc, argv);
     if (arg_parse_result.retcode == fsi::argparse::ParseRetCode::Version) {
         fprintf(stderr, "%s\n", fsi::outinfo::version.data());

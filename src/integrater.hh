@@ -45,7 +45,7 @@ inline void integrater(::std::filesystem::path const dirpath) noexcept {
 
         ::std::ifstream inputfile(path, ::std::ios::in | ::std::ios::binary);
         if (!inputfile.is_open()) [[unlikely]] {
-            fprintf(stderr, "fail to open file %s\n", path.string().c_str());
+            fprintf(stderr, "Error: fail to open file %s\n", path.string().c_str());
             fast_io::fast_terminate();
         }
         auto readed_data = ::std::vector<char>(filesize);
