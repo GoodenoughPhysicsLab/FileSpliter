@@ -49,7 +49,12 @@ inline void spliter(
     } while (bytes_count >= split_bytes);
 
     inputfile.close();
-    auto origin_filename = ::std::wofstream(output_dirpath / "filename.fsi.txt", ::std::ios::out);
+    auto origin_filename =
+#ifdef _WIN32
+        ::std::wofstream(output_dirpath / "filename.fsi.txt", ::std::ios::out);
+#else
+        ::std::ofstream(output_dirpath / "filename.fsi.txt", ::std::ios::out);
+#endif
     origin_filename.write(input_filepath.filename().c_str(), input_filepath.filename().string().size());
     origin_filename.close();
 }
