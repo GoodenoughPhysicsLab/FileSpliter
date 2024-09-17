@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <fstream>
 #include <filesystem>
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>

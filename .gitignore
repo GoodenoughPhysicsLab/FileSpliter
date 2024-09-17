@@ -1,4 +1,8 @@
 build/
+*.gz
+*.zip
+*.xz
+*.7z
 
 # Prerequisites
 *.d
