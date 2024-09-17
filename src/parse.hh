@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <filesystem>
 #include "integrater.hh"
@@ -9,10 +10,8 @@ namespace fsi::argparse {
 
 enum class ParseRetCode {
   OK = 0,
-  NO_ARG_ERROR,
-  INVALID_ARG_ERROR,
-  HELP_REQUESTED,
-  VERSION_REQUESTED,
+  Help,
+  Version,
   Exception,
 };
 
@@ -23,9 +22,10 @@ struct ParseResult {
 
 inline ParseResult parse(int const argc, char const* const* argv) noexcept {
     if (argc < 2) {
-        return {.retcode=ParseRetCode::NO_ARG_ERROR};
+        return {.retcode=ParseRetCode::Exception, .msg="Error: no arguments provided"};
     }
 
+    auto split_size = uintmax_t{1024 * 1024};
     auto inputfilepath = ::std::filesystem::path{};
     auto outputdirpath = ::std::filesystem::path{"FileSpliterOut"};
     auto integratepath = ::std::filesystem::path{};
@@ -37,20 +37,20 @@ inline ParseResult parse(int const argc, char const* const* argv) noexcept {
 
         auto arg = ::std::string{argv[i]};
         if (arg == "-h" || arg == "--help") {
-            return {.retcode=ParseRetCode::HELP_REQUESTED};
+            return {.retcode=ParseRetCode::Help};
         }
         else if (arg == "--version") {
-            return {.retcode=ParseRetCode::VERSION_REQUESTED};
+            return {.retcode=ParseRetCode::Version};
         }
         else if (arg == "-o") {
             if (i + 1 >= argc) {
-                return {.retcode=ParseRetCode::INVALID_ARG_ERROR};
+                return {.retcode=ParseRetCode::Exception, .msg="Error: -o takes no argument\n"};
             }
             outputdirpath = ::std::filesystem::absolute(::std::filesystem::path{argv[++i]});
         }
         else if (arg == "--integrate") {
             if (i + 1 >= argc) {
-                return {.retcode=ParseRetCode::INVALID_ARG_ERROR};
+                return {.retcode=ParseRetCode::Exception, .msg="Error: --integrate takes no argument\n"};
             }
             integratepath = ::std::filesystem::absolute(::std::filesystem::path{argv[++i]});
 
@@ -58,22 +58,32 @@ inline ParseResult parse(int const argc, char const* const* argv) noexcept {
                 || !::std::filesystem::is_directory(integratepath))
             {
                 return {.retcode=ParseRetCode::Exception,
-                        .msg="path "+integratepath.string()+" not found or is not dir"};
+                        .msg="Error: path "+integratepath.string()+" not found or is not dir"};
             }
+        }
+        else if (arg == "--split-size") {
+            if (i + 1 >= argc) {
+                return {.retcode=ParseRetCode::Exception, .msg="Error: --split-size takes no argument"};
+            }
+            auto _split_size = atoi(argv[++i]);
+            if (split_size <= 0) {
+                return {.retcode=ParseRetCode::Exception, .msg="Error: --split-size takes invalid value"};
+            }
+            split_size = static_cast<uintmax_t>(_split_size) * 1024;
         }
         else {
             if (::std::filesystem::exists(arg) && ::std::filesystem::is_regular_file(arg)) {
                 inputfilepath =::std::filesystem::absolute(::std::filesystem::path{arg});
             } else if (arg.starts_with("-")) {
-                return {.retcode=ParseRetCode::INVALID_ARG_ERROR};
+                return {.retcode=ParseRetCode::Exception, .msg="Error: no argument names "+arg};
             } else {
-                return {.retcode=ParseRetCode::Exception, .msg="path "+arg+" not found or is not file"};
+                return {.retcode=ParseRetCode::Exception, .msg="Error: path "+arg+" not found or is not a file"};
             }
         }
     }
 
     if (!inputfilepath.empty() && !outputdirpath.empty()) {
-        spliter(inputfilepath, outputdirpath);
+        spliter(inputfilepath, outputdirpath, split_size);
     }
     if (!integratepath.empty()) {
         integrater(integratepath);
