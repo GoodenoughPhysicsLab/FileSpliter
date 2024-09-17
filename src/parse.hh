@@ -44,13 +44,13 @@ inline ParseResult parse(int const argc, char const* const* argv) noexcept {
         }
         else if (arg == "-o") {
             if (i + 1 >= argc) {
-                return {.retcode=ParseRetCode::Exception, .msg="Error: -o takes no argument\n"};
+                return {.retcode=ParseRetCode::Exception, .msg="Error: -o takes no argument"};
             }
             outputdirpath = ::std::filesystem::absolute(::std::filesystem::path{argv[++i]});
         }
         else if (arg == "--integrate") {
             if (i + 1 >= argc) {
-                return {.retcode=ParseRetCode::Exception, .msg="Error: --integrate takes no argument\n"};
+                return {.retcode=ParseRetCode::Exception, .msg="Error: --integrate takes no argument"};
             }
             integratepath = ::std::filesystem::absolute(::std::filesystem::path{argv[++i]});
 
