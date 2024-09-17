@@ -7,28 +7,11 @@
 #include <fstream>
 #include <cassert>
 #include <filesystem>
-#include <string_view>
 #include "terminate.hh"
 
-namespace fs::details {
+namespace fsi {
 
-inline std::string file_get_content(std::filesystem::path const& path) {
-    std::ifstream ifs(path, std::ios::in | std::ios::binary);
-    std::istreambuf_iterator<char> iit(ifs), iite;
-    std::string content(iit, iite);
-    return content;
-}
-
-inline void file_put_content(std::filesystem::path const& path, std::string_view const& content) {
-    std::ofstream ofs(path, std::ios::out | std::ios::binary);
-    ofs << content;
-}
-
-} // namespace details
-
-namespace fs {
-
-inline void run(
+inline void spliter(
         ::std::filesystem::path const input_filepath,
         ::std::filesystem::path const output_dirpath,
         uintmax_t const split_bytes = 1024 * 1024
@@ -54,7 +37,7 @@ inline void run(
         inputfile.read(buffer.data(), split_bytes);
         bytes_count = inputfile.gcount();
 
-        auto const output_filepath = output_dirpath / ("file_"+::std::to_string(file_index++)+".bin");
+        auto const output_filepath = output_dirpath / (::std::to_string(file_index++)+".fsi.bin");
         ::std::ofstream outputfile(output_filepath, ::std::ios::out | ::std::ios::binary);
         if (!outputfile.is_open()) [[unlikely]] {
             ::std::cerr << "InternalError: failed to open output file " << output_filepath << "\n";
@@ -64,6 +47,11 @@ inline void run(
         outputfile.write(buffer.data(), bytes_count);
         outputfile.close();
     } while (bytes_count >= split_bytes);
+
+    inputfile.close();
+    auto origin_filename = ::std::wofstream(output_dirpath / "filename.fsi.txt", ::std::ios::out);
+    origin_filename.write(input_filepath.filename().c_str(), input_filepath.filename().string().size());
+    origin_filename.close();
 }
 
-} // namespace fs
+} // namespace fsi
