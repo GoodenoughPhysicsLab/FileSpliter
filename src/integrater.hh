@@ -9,7 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "terminate.hh"
+#include <fast_io/fast_io.h>
 
 namespace fsi::details {
 

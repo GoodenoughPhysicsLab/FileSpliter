@@ -1,5 +1,5 @@
 build/
-simdjson/
+third-parties/
 *.gz
 *.zip
 *.xz

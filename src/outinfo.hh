@@ -14,6 +14,8 @@ constexpr auto version = ::std::string_view{
   ")"
 };
 
+constexpr auto version_num = 20240920;
+
 constexpr auto usage = ::std::string_view{
 R"(usage: FileSpliter [option] ...
 Options:

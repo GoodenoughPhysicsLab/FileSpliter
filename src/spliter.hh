@@ -3,11 +3,14 @@
 #include <cstdint>
 #include <ios>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <fstream>
 #include <cassert>
 #include <filesystem>
-#include "terminate.hh"
+#include <fast_io/fast_io_device.h>
+#include <fast_io/fast_io.h>
+#include "outinfo.hh"
 
 namespace fsi {
 
@@ -49,14 +52,13 @@ inline void spliter(
     } while (bytes_count >= split_bytes);
 
     inputfile.close();
-    auto origin_filename =
-#ifdef _WIN32
-        ::std::wofstream(output_dirpath / "filename.fsi.txt", ::std::ios::out);
-#else
-        ::std::ofstream(output_dirpath / "filename.fsi.txt", ::std::ios::out);
-#endif
-    origin_filename.write(input_filepath.filename().c_str(), input_filepath.filename().string().size());
-    origin_filename.close();
+    auto metadata_file = fast_io::obuf_file(output_dirpath / "metadata.fsi.json");
+    auto metadata = ::std::string{
+            "{\"filename\":\"" + input_filepath.filename().string() +
+            "\",\"version\":\"" + ::std::to_string(outinfo::version_num) +
+            "\",\"hash\":" + ::std::to_string(::std::filesystem::file_size(input_filepath)) + "}"
+    };
+    fast_io::io::print(metadata_file, metadata);
 }
 
 } // namespace fsi

@@ -2,8 +2,8 @@
 #include <cstdio>
 #include <csignal>
 #include <string_view>
+#include <fast_io/fast_io.h>
 #include "outinfo.hh"
-#include "terminate.hh"
 #include "parse.hh"
 
 int main(int argc, char **argv) noexcept {
@@ -25,14 +25,12 @@ int main(int argc, char **argv) noexcept {
         assert(!arg_parse_result.msg.empty());
         fprintf(stderr, "%s\n", arg_parse_result.msg.c_str());
     }
+#ifndef NDEBUG
     else {
-#ifdef NDEBUG
-        fast_io::unreachable();
-#else
         fprintf(stderr, "InternalError: parse returned an unknown code\n");
         fast_io::fast_terminate();
-#endif
     }
+#endif
 
     return 0;
 }
