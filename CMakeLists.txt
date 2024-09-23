@@ -17,7 +17,8 @@ execute_process(
 if(GIT_FOUND_RESULT EQUAL 0)
     message(STATUS "Checking for git - yes")
 else()
-    message(FATAL_ERROR "Checking for git - no")
+    message(STATUS "Checking for git - no")
+    message(FATAL_ERROR "Please install git")
 endif()
 
 # creating third-parties directory
@@ -34,7 +35,7 @@ else()
     execute_process(
         COMMAND git clone --depth=1 https://github.com/simdjson/simdjson.git ${CMAKE_SOURCE_DIR}/simdjson
     )
-    file(RENAME ${CMAKE_SOURCE_DIR}/simdjson/include ${CMAKE_SOURCE_DIR}/third-parties/simdjson)
+    file(RENAME ${CMAKE_SOURCE_DIR}/simdjson/singleheader ${CMAKE_SOURCE_DIR}/third-parties/simdjson)
     file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/simdjson)
 endif()
 
@@ -52,4 +53,6 @@ endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/third-parties)
 
-add_executable(${CMAKE_PROJECT_NAME} ${CMAKE_SOURCE_DIR}/src/main.cc)
+add_executable(${CMAKE_PROJECT_NAME}
+                ${CMAKE_SOURCE_DIR}/src/main.cc
+                ${CMAKE_SOURCE_DIR}/third-parties/simdjson/simdjson.cpp)

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <fast_io/fast_io.h>
+#include <simdjson/simdjson.h>
 
 namespace fsi::details {
 
@@ -27,14 +28,21 @@ inline void integrater(::std::filesystem::path const dirpath) noexcept {
 
     ::std::vector<details::integrate_data> data{};
     ::std::string output_filename = "integrate.bin";
+    auto metadata = simdjson::ondemand::document{};
 
     for (auto const& entry : ::std::filesystem::directory_iterator(dirpath)) {
         auto const& path = entry.path();
 
-        if (path.filename() == "filename.fsi.txt") {
-            auto temp = ::std::ifstream(path);
-            temp >> output_filename;
-            temp.close();
+        if (path.filename() == "metadata.fsi.json") {
+            simdjson::dom::parser parser;
+            simdjson::dom::element metadata;
+            simdjson::error_code err_code = parser.load(path.string()).get(metadata);
+            if (err_code) [[unlikely]] {
+                fprintf(stderr, "Error: fail to parse metadata.fsi.json\n");
+            }
+            assert(metadata["filename"].is_string());
+            output_filename = metadata["filename"].get_string().value();
+
             continue;
         }
 
