@@ -11,6 +11,7 @@
 #include <vector>
 #include <fast_io/fast_io.h>
 #include <simdjson/simdjson.h>
+#include "outinfo.hh"
 
 namespace fsi::details {
 
@@ -28,6 +29,7 @@ inline void integrater(::std::filesystem::path const dirpath) noexcept {
 
     ::std::vector<details::integrate_data> data{};
     ::std::string output_filename = "integrate.bin";
+    uintmax_t version_num{};
     auto metadata = simdjson::ondemand::document{};
 
     for (auto const& entry : ::std::filesystem::directory_iterator(dirpath)) {
@@ -42,6 +44,8 @@ inline void integrater(::std::filesystem::path const dirpath) noexcept {
             }
             assert(metadata["filename"].is_string());
             output_filename = metadata["filename"].get_string().value();
+            assert(metadata["version"].is_uint64());
+            version_num = metadata["version"].get_uint64().value();
 
             continue;
         }
@@ -66,6 +70,10 @@ inline void integrater(::std::filesystem::path const dirpath) noexcept {
             .data=readed_data
         });
         inputfile.close();
+    }
+
+    if (version_num != outinfo::version_num) {
+        puts("Warning: version number mismatch");
     }
 
     ::std::sort(data.begin(), data.end(), [](auto const& lhs, auto const& rhs) {

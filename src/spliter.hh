@@ -55,8 +55,8 @@ inline void spliter(
     auto metadata_file = fast_io::obuf_file(output_dirpath / "metadata.fsi.json");
     auto metadata = ::std::string{
             "{\"filename\":\"" + input_filepath.filename().string() +
-            "\",\"version\":\"" + ::std::to_string(outinfo::version_num) +
-            "\",\"hash\":" + ::std::to_string(::std::filesystem::file_size(input_filepath)) + "}"
+            "\",\"version\":" + ::std::to_string(outinfo::version_num) +
+            ",\"hash\":" + ::std::to_string(::std::filesystem::file_size(input_filepath)) + "}"
     };
     fast_io::io::print(metadata_file, metadata);
 }
