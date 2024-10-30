@@ -37,3 +37,5 @@ third-parties/
 *.exe
 *.out
 *.app
+
+FileSpliter-v*

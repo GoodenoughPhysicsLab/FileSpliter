@@ -43,9 +43,17 @@ inline void integrater(::std::filesystem::path const dirpath) noexcept {
                 fprintf(stderr, "Error: fail to parse metadata.fsi.json\n");
             }
             assert(metadata["filename"].is_string());
-            output_filename = metadata["filename"].get_string().value();
+            auto output_filename_ = metadata["filename"].get_string();
+            if (output_filename_.error()) [[unlikely]] {
+                fprintf(stderr, "Error: fail to parse metadata.fsi.json\n");
+            }
+            output_filename = output_filename_.value_unsafe();
             assert(metadata["version"].is_uint64());
-            version_num = metadata["version"].get_uint64().value();
+            auto version_num_ = metadata["version"].get_uint64();
+            if (version_num_.error()) [[unlikely]] {
+                fprintf(stderr, "Warning: version number mismatch\n");
+            }
+            version_num = version_num_.value_unsafe();
 
             continue;
         }
