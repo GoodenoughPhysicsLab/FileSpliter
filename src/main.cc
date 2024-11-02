@@ -3,8 +3,8 @@
 #include <csignal>
 #include <string_view>
 #include <fast_io/fast_io.h>
-#include "outinfo.hh"
-#include "parse.hh"
+#include <fsi/outinfo.hh>
+#include <fsi/parse.hh>
 
 int main(int argc, char **argv) noexcept {
     ::std::signal(SIGINT, [](int sig){

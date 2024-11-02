@@ -39,3 +39,5 @@ third-parties/
 *.app
 
 FileSpliter-v*
+simdjson/
+fast_io/
